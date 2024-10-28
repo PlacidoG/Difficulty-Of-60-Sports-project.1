@@ -1,0 +1,239 @@
+---
+title: "Difficulty of 60 Sports  - Final Project"
+author: "Placido Garay"
+date: "2023-11-27"
+output:
+  beamer_presentation: default
+  slidy_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+install.packages("ggplot2", repos = "http://cran.us.r-project.org")
+install.packages("kableExtra", repos = "http://cran.us.r-project.org")
+#used this to tidy up the data
+library(tidyverse)
+#used for data manipulation
+library(dplyr)
+#used for data visualization
+library(ggplot2)
+#Scroll boxes
+library(kableExtra)
+```
+
+## Introduction
+
+[Sport Dataset Link](https://data.world/coreyhermanson/toughest-sport-by-skill)
+
+This data set conducts 60 sports that basis their athleticism in 10 categories. The 10 skills (categories) are totaled and ranked based on how difficult the sport is by skill on a 1-10 scale. The data was calculated by a group of 8 sports scientists from the United States Olympic Committee. They based their knowledge of ranking these sports by their past experiences of analyzing and interpreting athletes performances. There isn't a definitive timeline of when the data was calculated, but was published in 2017.
+
+```{r, include=FALSE}
+library(readxl)
+toughestsport <- read_excel("C:/Users/Placido Garay/OneDrive - University of Houston Downtown/Desktop/R files/Final Project/toughestsport.xlsx")
+View(toughestsport)
+
+```
+
+## Questions to ask:
+
+-   What and how does the unfiltered data-set explain itself?
+
+-   How does each sport rank respically within their own sport category that include:
+
+-   
+
+    1.  Toughest Snow/Ice Sports
+
+-   
+
+    2.  Toughest Adventure Sports
+
+-   
+
+    3.  Toughest Water Sports
+
+-   
+
+    4.  Toughest Team Sport
+
+-   
+
+    5.  Toughest Individual Sport
+
+-   What is the max,min and mean of difficulty for the 5 data-sets.
+
+-   Which skill has the highest overall total against one another?
+
+## Packages Used:
+
+```{r, echo = T}
+#used this to tidy up the data
+library(tidyverse)
+#used for data manipulation
+library(dplyr)
+#used for data visualization
+library(ggplot2)
+#Scroll boxes
+library(kableExtra)
+```
+
+## Unfiltered Dataset
+
+```{r, echo=TRUE}
+glimpse(toughestsport)
+```
+
+## Key Terms:
+
+-   END (Endurance): The ability to continue to perform a skill or action for long periods of time.
+-   STR (Strength): The ability to produce force.
+-   PWR (Power): The ability to produce strength in the shortest possible time.
+-   SPD (Speed): The ability to move quickly.
+-   AGI(Agility): The ability to change direction quickly.
+-   FLX (Flexibility): The ability to stretch the joints across a large range of motion.
+-   NER (Nerve): The ability to overcome fear.
+-   DUR(Durability): The ability to withstand physical punishment over a long period of time.
+-   HAN (Hand-Eye Coordination): The ability to react quickly to sensory perception.
+-   ANA (Analytic Aptitude): The ability to evaluate and react appropriately to strategic situations.
+
+## Calculations:
+
+-   Total \# of sports: 60
+-   Categories (Skills): 10
+-   Out of the 10 categories, skills are arranged from a 1-10 scale based on the demands for each sport.
+-   Total \# of skills: All 10 categories are added and are based individually for each sport.
+-   Rank: All 60 sports are ranked based on their degree of difficulty total amount.
+
+## Unfiltered Plot/Data
+
+Here we have the unfiltered data set in a scroll-box table.
+
+```{r, echo=FALSE}
+
+toughestsport %>% kbl() %>% kable_paper()  %>% scroll_box(height = "800px")
+
+
+toughestsport  %>%  arrange(SPORT) %>%
+  summarise(max(TOTAL),min(TOTAL),mean(TOTAL))
+
+```
+
+## Toughest Snow/Ice Sports
+
+In this data set, we wanted to categorize snow sports from the original data set and rank them to see what is the toughest sport in their own category. From the graph, we can determine that Ice Hockey is considered the most difficult sport and curling is the least difficult.
+
+```{r, echo=FALSE}
+ice_sports <- toughestsport %>% 
+  filter(SPORT=='Ice Hockey'| SPORT=='Skiing: Alpine'| SPORT=='Speed Skating'| SPORT=='Figure Skating'| SPORT=='Skiing: Freestyle'| SPORT=='Bobsledding/Luge'| SPORT=='Ski Jumping'| SPORT=='Skiing: Nordic'| SPORT=='Curling') %>% 
+  select(SPORT,TOTAL) %>%  mutate(RANK2=dense_rank(desc(TOTAL)))
+
+
+ice_sports %>% 
+   ggplot()+aes(x=reorder(SPORT,-RANK2), y=TOTAL, fill=TOTAL)+geom_col()+ labs(title = 'Degree of difficulty Snow/Ice Sports',x='Sports',y='Total')+coord_flip()+scale_fill_gradient(low = 'green',high = 'red')+geom_text(aes(label=TOTAL), hjust=-0.1,size=2.1, position = position_dodge(width=1),inherit.aes = TRUE)+ theme_bw()
+
+
+ice_sports %>% arrange(SPORT) %>% 
+  summarise(max(TOTAL),min(TOTAL),mean(TOTAL)) 
+
+
+```
+
+## Toughest Adventure Sports
+
+In this data set, we wanted to categorize adventure sports from the original data set and rank them to see what is the toughest sport in their own category.From the graph, we can determine that surfing is the most difficult sport and fishing is least difficult.
+
+```{r, echo=FALSE}
+adv_sports <- toughestsport %>% 
+  filter(SPORT=='Surfing'| SPORT=='Skateboarding'| SPORT=='Rowing'| SPORT=='Water Skiing'| SPORT=='Canoe/Kayak'| SPORT=='Horse Racing'| SPORT=='Cheerleading'| SPORT=='Equestrian'| SPORT=='Shooting'| SPORT=='Fishing') %>% 
+  select(SPORT,TOTAL)%>%  mutate(RANK3=dense_rank(desc(TOTAL)))
+
+
+adv_sports %>% 
+   ggplot()+aes(x=SPORT,y=TOTAL,color=SPORT)+ geom_point()+labs(title = 'Degree of difficulty Adventure Sports',x='Sports',y='Total')+scale_x_discrete(guide = guide_axis(n.dodge = 2))+geom_text(aes(label=TOTAL), hjust=-0.2,size=3.0, position = position_dodge(width=1),inherit.aes = TRUE)+ theme_bw()+ geom_vline(xintercept = 1:11,color='grey')
+
+adv_sports %>% arrange(SPORT) %>% 
+  summarise(max(TOTAL),min(TOTAL),mean(TOTAL))
+
+```
+
+## Toughest Water Sports
+
+In this data set, we wanted to categorize water sports from the original data set and rank them to see what is the toughest sport in their own category.From the graph, we can determine that Water Polo is the most difficult sport and fishing is least difficult.
+
+```{r, echo=FALSE}
+water_sports <- toughestsport %>% 
+  filter(SPORT=='Water Polo'| SPORT=='Diving'| SPORT=='Swimming (all strokes): Distance'| SPORT=='Water Skiing'| SPORT=='Swimming (all strokes): Sprints'| SPORT=='Fishing') %>% 
+  select(SPORT,TOTAL)%>%  mutate(RANK4=dense_rank(desc(TOTAL)))
+
+
+water_sports %>% 
+    ggplot()+aes(x=reorder(SPORT,-RANK4), y=TOTAL, fill=TOTAL)+geom_col()+scale_fill_gradient(low = 'blue',high = 'purple')+ labs(title = 'Degree of difficulty Water Sports',x='Sports',y='Total')+coord_flip()+geom_text(aes(label=TOTAL), hjust=-0.1,size=2.1, position = position_dodge(width=1),inherit.aes = TRUE)+ theme_bw()
+
+
+
+water_sports %>% arrange(SPORT) %>% 
+  summarise(max(TOTAL),min(TOTAL),mean(TOTAL))
+
+```
+
+## Toughest Team Sport
+
+In this data set, we wanted to categorize Team sports from the original data set and rank them to see what is the toughest sport in their own category.From the graph, we can determine that Ice Hockey is the most difficult sport and Cheerleading is least difficult.
+
+```{r, echo=FALSE}
+team_sports <- toughestsport %>% 
+  filter(SPORT=='Ice Hockey'| SPORT=='Football'| SPORT=='Basketball'| SPORT=='Baseball/Softball'| SPORT=='Soccer'| SPORT=='Water Polo'| SPORT=='Rugby'| SPORT=='Lacrosse'| SPORT=='Volleyball'| SPORT=='Team Handball'| SPORT=='Cheerleading') %>% 
+  select(SPORT,TOTAL)%>%  mutate(RANK4=dense_rank(desc(TOTAL)))
+
+
+team_sports %>% 
+   ggplot()+aes(x=SPORT,y=TOTAL,color=SPORT)+ geom_point()+labs(title = 'Degree of difficulty Team Sports',x='Sports',y='Total')+scale_x_discrete(guide = guide_axis(n.dodge = 2))+geom_text(aes(label=TOTAL), hjust=-0.2,size=2.5, position = position_dodge(width=1),inherit.aes = TRUE)+ theme_bw()+ geom_vline(xintercept = 1:11,color='grey')
+
+team_sports %>% arrange(SPORT) %>% 
+  summarise(max(TOTAL),min(TOTAL),mean(TOTAL))
+
+
+```
+
+## Toughest Individual Sport
+
+In this data set, we wanted to categorize Individual sports from the original data set and rank them to see what is the toughest sport in their own category.From the graph, we can determine that Boxing is the most difficult sport and Fishing is least difficult.
+
+```{r, echo=FALSE}
+Indv_sports <- toughestsport %>% 
+  filter(SPORT=='Wrestling'| SPORT=='Martial Arts'| SPORT=='Tennis'| SPORT=='Gymnastics'| SPORT=='Skiing: Alpine'| SPORT=='Rodeo: Steer Wrestling'| SPORT=='Speed Skating'| SPORT=='Figure Skating'| SPORT=='Volleyball'| SPORT=='Cycling: Distance'| SPORT=='Racquetball/Squash'| SPORT=='Track and Field: Pole Vault'| SPORT=='Surfing'| SPORT=='Fencing'| SPORT=='Cycling: Sprints'| SPORT=='Ski Jumping'| SPORT=='Badminton'| SPORT=='Auto Racing'| SPORT=='Diving'| SPORT=='Weight-Lifting'| SPORT=='Table Tennis'| SPORT=='Horse Racing'| SPORT=='Golf'| SPORT=='Archery'| SPORT=='Bowling'| SPORT=='Shooting'| SPORT=='Fishing'| SPORT=='Boxing') %>% 
+  select(SPORT,TOTAL) %>%  mutate(RANK5=dense_rank(desc(TOTAL)))
+
+
+Indv_sports %>% 
+   ggplot()+aes(x=reorder(SPORT,-RANK5), y=TOTAL, fill=TOTAL)+geom_col()+scale_fill_gradient(low = 'navy',high = 'orange')+ labs(title = 'Degree of difficulty Individual Sports',x='Sports',y='Total')+coord_flip()+geom_text(aes(label=TOTAL), hjust=-0.1,size=2.1, position = position_dodge(width=1),inherit.aes = TRUE)+ theme_bw()
+
+  
+Indv_sports %>% arrange(SPORT) %>% 
+  summarise(max(TOTAL),min(TOTAL),mean(TOTAL))
+
+```
+
+## Which skill has the highest overall total against one another?
+
+The data collected here is the sum total for each skill for all sports.
+
+According to the graph, power (PWR) is considered the most or highest utilized skill in all 60 sports. Durability (DUR) however, is considered the least utilized skill based on the total demand for each sport.
+
+-   Side note: The y-axis,(Total) starts at 275 and not a baseline at zero b/c were trying to display the data more precisely. All total amounts are above 275.
+
+```{r, echo=FALSE}
+
+toughest_skill_overrall <- toughestsport %>% 
+  select(END,STR,PWR,SPD,AGI,FLX,NER,DUR,HAN,ANA) %>% 
+  summarise(across(where(is.numeric),sum)) %>% 
+  pivot_longer(.,cols=c(END,STR,PWR,SPD,AGI,FLX,NER,DUR,HAN,ANA), names_to = 'Skills',values_to ='Total') %>% 
+  ggplot()+aes(x=Skills,y=Total)+geom_point()+labs(title = '10 skills arranged based on their demand total for all sports')+geom_text(aes(label=Total), hjust=-0.2,size=2.7, position = position_dodge(width=1),inherit.aes = TRUE)+ theme_bw()+ geom_vline(xintercept = 1:10,color='navy')
+
+toughest_skill_overrall
+
+```
+
+## Conclusion
+
+-   In conclusion, we can determine that the data-set reveals that out of 60 sports. Boxing is considered the most difficult sport and fishing is more effortless based on their total amount of difficulty based on 10 skills ranked 1-10. Each skill differentiates and presents a range of difficulty for each sport. Team sports seemed to be more competitive and difficult compared to individual sports, based on their mean total. Then when we calculated the sum of skills, power is the most utilized in all sports, while durability is the least utilized.
